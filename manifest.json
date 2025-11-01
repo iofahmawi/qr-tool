@@ -1,0 +1,17 @@
+{
+    "name": "QR Tool",
+    "short_name": "QR Tool",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#f8f9fa",
+    "description": "أداة بسيطة لإنشاء وقراءة رموز الاستجابة السريعة.",
+    "icons": [
+        {
+            "src": "icon-1024.png",
+            "sizes": "1024x1024",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}
