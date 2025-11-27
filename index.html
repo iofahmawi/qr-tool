@@ -25,196 +25,32 @@
             --tabs-bg-color: #f1f3f5;
         }
 
-        body {
-            font-family: var(--font-family);
-            background-color: var(--background-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 2rem;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 600px;
-            background: var(--surface-color);
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-        }
-
-        .tabs {
-            display: flex;
-            background-color: var(--tabs-bg-color);
-            border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
-        }
-
-        .tab-button {
-            flex: 1;
-            padding: 1rem;
-            border: none;
-            background: transparent;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-bottom: 3px solid transparent;
-            font-family: var(--font-family);
-            border-radius: 12px 12px 0 0;
-        }
-
-        .tab-button.active {
-            color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
-        }
-
-        .tab-content {
-            padding: 2rem;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        h2 {
-            margin-top: 0;
-            font-size: 1.5rem;
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
+        body { font-family: var(--font-family); background-color: var(--background-color); color: var(--text-color); margin: 0; padding: 2rem; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
+        .app-container { width: 100%; max-width: 600px; background: var(--surface-color); border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08); overflow: hidden; }
+        .tabs { display: flex; background-color: var(--tabs-bg-color); border-top-left-radius: 15px; border-top-right-radius: 15px; }
+        .tab-button { flex: 1; padding: 1rem; border: none; background: transparent; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; border-bottom: 3px solid transparent; font-family: var(--font-family); border-radius: 12px 12px 0 0; }
+        .tab-button.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+        .tab-content { padding: 2rem; }
+        .hidden { display: none; }
+        h2 { margin-top: 0; font-size: 1.5rem; text-align: center; margin-bottom: 1.5rem; }
+        textarea { width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; box-sizing: border-box; margin-bottom: 1rem; font-size: 1rem; font-family: var(--font-family); transition: border-color 0.2s ease-in-out; resize: none; scrollbar-width: none; -ms-overflow-style: none; }
+        textarea::-webkit-scrollbar { display: none; }
+        textarea:focus { outline: none; border-color: var(--primary-color); }
+        .btn { display: block; width: 100%; padding: 0.8rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; text-align: center; transition: background-color 0.3s ease; font-family: var(--font-family); text-decoration: none; box-sizing: border-box; }
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .btn-primary:hover { background-color: var(--primary-hover); }
+        #drop-zone { border: 2px dashed var(--border-color); border-radius: 8px; padding: 2rem; text-align: center; cursor: pointer; transition: all 0.3s ease; }
+        #drop-zone.dragover { border-color: var(--primary-color); background-color: #e9f5ff; }
+        #reader-result { margin-top: 1.5rem; padding: 1rem; background-color: #e9ecef; border-radius: 8px; text-align: right; word-wrap: break-word; font-weight: 600; line-height: 1.6; white-space: pre-wrap; }
         
-        textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            box-sizing: border-box;
-            margin-bottom: 1rem;
-            font-size: 1rem;
-            font-family: var(--font-family);
-            transition: border-color 0.2s ease-in-out;
-            resize: none;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-        
-        textarea::-webkit-scrollbar {
-            display: none;
-        }
-
-        textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            text-align: center;
-            transition: background-color 0.3s ease;
-            font-family: var(--font-family);
-            text-decoration: none;
-            box-sizing: border-box;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-hover);
-        }
-        
-        #drop-zone {
-            border: 2px dashed var(--border-color);
-            border-radius: 8px;
-            padding: 2rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        #drop-zone.dragover {
-            border-color: var(--primary-color);
-            background-color: #e9f5ff;
-        }
-
-        #reader-result {
-            margin-top: 1.5rem;
-            padding: 1rem;
-            background-color: #e9ecef;
-            border-radius: 8px;
-            text-align: right;
-            word-wrap: break-word;
-            font-weight: 600;
-            line-height: 1.6;
-            white-space: pre-wrap;
-        }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-        .modal-overlay.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-        .modal-content {
-            background: var(--surface-color);
-            padding: 2rem;
-            border-radius: 12px;
-            position: relative;
-            width: 90%;
-            max-width: 280px; /* عدنا للحجم الأصلي */
-            text-align: center;
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-        }
-        .modal-overlay.visible .modal-content {
-            transform: scale(1);
-        }
-        .close-button {
-            position: absolute;
-            top: 10px;
-            left: 15px;
-            font-size: 2rem;
-            font-weight: bold;
-            color: #aaa;
-            cursor: pointer;
-            line-height: 1;
-        }
-        #modal-qrcode-display {
-            margin: 1.5rem 0;
-        }
-        #modal-qrcode-display img {
-            max-width: 100%;
-            border-radius: 8px;
-        }
-        #modal-download-link {
-            margin: 1rem auto 0;
-        }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
+        .modal-overlay.visible { opacity: 1; visibility: visible; }
+        .modal-content { background: var(--surface-color); padding: 2rem; border-radius: 12px; position: relative; width: 90%; max-width: 280px; text-align: center; transform: scale(0.9); transition: transform 0.3s ease; }
+        .modal-overlay.visible .modal-content { transform: scale(1); }
+        .close-button { position: absolute; top: 10px; left: 15px; font-size: 2rem; font-weight: bold; color: #aaa; cursor: pointer; line-height: 1; }
+        #modal-qrcode-display { margin: 1.5rem 0; display: flex; justify-content: center; }
+        #modal-qrcode-display img { max-width: 100%; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        #modal-download-link { margin: 1rem auto 0; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
@@ -275,7 +111,7 @@
             tabButtons[1].classList.toggle('active', !isGenerator);
         }
 
-        // --- دالة مساعدة لرسم العيون بحواف ناعمة ---
+        // دالة رسم الأشكال المنحنية
         function drawRoundedRect(ctx, x, y, width, height, radius) {
             ctx.beginPath();
             ctx.moveTo(x + radius, y);
@@ -291,89 +127,106 @@
             ctx.fill();
         }
 
-        // --- وظائف إنشاء رمز QR (المعدلة لرسم النقاط) ---
+        // دالة مخصصة لرسم العين الواحدة (Finder Pattern)
+        function drawFinder(ctx, x, y, tileSize, color) {
+            const size7 = tileSize * 7;
+            const size5 = tileSize * 5;
+            const size3 = tileSize * 3;
+            
+            // 1. المربع الخارجي (7x7) - أسود
+            ctx.fillStyle = color;
+            // نصف القطر هنا هو ما يحدد انحناء العين
+            drawRoundedRect(ctx, x, y, size7, size7, tileSize * 1.5); 
+
+            // 2. الفراغ الأبيض (5x5)
+            ctx.fillStyle = '#ffffff';
+            const offsetWhite = (size7 - size5) / 2;
+            drawRoundedRect(ctx, x + offsetWhite, y + offsetWhite, size5, size5, tileSize * 1.0);
+
+            // 3. المربع الداخلي (3x3) - أسود
+            ctx.fillStyle = color;
+            const offsetInner = (size7 - size3) / 2;
+            drawRoundedRect(ctx, x + offsetInner, y + offsetInner, size3, size3, tileSize * 0.8);
+        }
+
         async function generateQRCode() {
             const text = textInput.value.trim();
-            if (!text) {
-                alert('الرجاء إدخال نص أو رابط.');
-                return;
-            }
+            if (!text) { alert('الرجاء إدخال نص أو رابط.'); return; }
             generateBtn.textContent = '... جاري الإنشاء ...';
             generateBtn.disabled = true;
 
             try {
-                // 1. استخراج بيانات الرمز الخام
                 const rawQR = QRCode.create(text, { errorCorrectionLevel: 'H' });
                 const moduleCount = rawQR.modules.size;
                 const tileSize = 20; 
                 const margin = tileSize * 4; 
                 const canvasSize = (moduleCount * tileSize) + (margin * 2);
 
-                // 2. إعداد الكانفاس
                 const canvas = document.createElement('canvas');
                 canvas.width = canvasSize;
                 canvas.height = canvasSize;
                 const ctx = canvas.getContext('2d');
 
-                // 3. الخلفية بيضاء
+                // خلفية بيضاء
                 ctx.fillStyle = '#ffffff';
                 ctx.fillRect(0, 0, canvasSize, canvasSize);
 
-                // 4. لون الرمز (أسود كما في الأصل)
-                ctx.fillStyle = '#000000';
+                const qrColor = '#000000'; // لون الرمز (أسود)
 
-                // 5. رسم النقاط
+                // رسم النقاط (البيانات)
+                ctx.fillStyle = qrColor;
                 for (let row = 0; row < moduleCount; row++) {
                     for (let col = 0; col < moduleCount; col++) {
+                        // التحقق هل النقطة جزء من العيون؟
+                        const isFinder = (
+                            (row < 7 && col < 7) || 
+                            (row < 7 && col >= moduleCount - 7) || 
+                            (row >= moduleCount - 7 && col < 7)
+                        );
+
+                        // إذا كانت جزءاً من العين، تجاهلها الآن (سنرسمها لاحقاً ككتلة واحدة)
+                        if (isFinder) continue;
+
+                        // رسم النقاط العادية
                         if (rawQR.modules.get(row, col)) {
                             const x = margin + (col * tileSize);
                             const y = margin + (row * tileSize);
-
-                            // تحديد هل النقطة جزء من العيون (Finders)
-                            const isFinder = (
-                                (row < 7 && col < 7) || 
-                                (row < 7 && col >= moduleCount - 7) || 
-                                (row >= moduleCount - 7 && col < 7)
-                            );
-
-                            if (isFinder) {
-                                // رسم العيون كمربعات بزوايا ناعمة قليلاً
-                                drawRoundedRect(ctx, x, y, tileSize, tileSize, 0); // جعلتها 0 لتبقى مربعة تماما للعيون أو يمكن وضع 2 لنعومة طفيفة جدا
-                            } else {
-                                // رسم البيانات كدوائر
-                                ctx.beginPath();
-                                const centerX = x + (tileSize / 2);
-                                const centerY = y + (tileSize / 2);
-                                const radius = (tileSize / 2) * 0.85; // حجم الدائرة
-                                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-                                ctx.fill();
-                            }
+                            
+                            // رسم دائرة
+                            ctx.beginPath();
+                            const centerX = x + (tileSize / 2);
+                            const centerY = y + (tileSize / 2);
+                            const radius = (tileSize / 2) * 0.85;
+                            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                            ctx.fill();
                         }
                     }
                 }
 
-                // 6. العرض
+                // رسم العيون الثلاث (Finder Patterns) كأشكال متصلة
+                // 1. أعلى اليسار
+                drawFinder(ctx, margin, margin, tileSize, qrColor);
+                // 2. أعلى اليمين
+                drawFinder(ctx, margin + ((moduleCount - 7) * tileSize), margin, tileSize, qrColor);
+                // 3. أسفل اليسار
+                drawFinder(ctx, margin, margin + ((moduleCount - 7) * tileSize), tileSize, qrColor);
+
                 const dataUrl = canvas.toDataURL('image/png');
-                // عرض الصورة داخل النافذة (مع تحديد العرض 100% ليحترم عرض النافذة الأصلي)
                 modalQrDisplay.innerHTML = `<img src="${dataUrl}" alt="QR Code" style="width: 100%; height: auto;">`;
                 modalDownloadLink.href = dataUrl;
                 qrModal.classList.add('visible');
 
             } catch (err) {
                 console.error(err);
-                alert('عذراً، لم نتمكن من إنشاء رمز QR. قد يكون النص طويلاً جداً.');
+                alert('عذراً، حدث خطأ. حاول تقليل النص.');
             } finally {
                 generateBtn.textContent = 'إنشاء الرمز';
                 generateBtn.disabled = false;
             }
         }
 
-        // --- وظائف قراءة رمز QR (لم تتغير) ---
         async function handleFile(file) {
-            if (!file || !file.type.startsWith('image/')) {
-                alert('الرجاء اختيار ملف صورة صالح.');
-                return;
-            }
+            if (!file || !file.type.startsWith('image/')) { alert('الرجاء اختيار ملف صورة صالح.'); return; }
             readerResult.classList.remove('hidden');
             readerResult.textContent = 'جاري البحث عن رمز...';
             const objectURL = URL.createObjectURL(file);
@@ -388,9 +241,7 @@
                         URL.revokeObjectURL(objectURL);
                         return;
                     }
-                } catch (error) {
-                    // Fallback to jsQR
-                }
+                } catch (error) {}
             }
 
             const imageForCanvas = new Image();
@@ -404,41 +255,25 @@
                     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                     const code = jsQR(imageData.data, imageData.width, imageData.height);
                     setResult(code ? code.data : null);
-                } catch (error) {
-                    setResult(null);
-                }
+                } catch (error) { setResult(null); }
                 URL.revokeObjectURL(objectURL);
             };
             imageForCanvas.src = objectURL;
         }
 
         function setResult(data) {
-            if (data) {
-                readerResult.textContent = data;
-            } else {
-                readerResult.textContent = 'عذراً، لم يتم العثور على رمز QR في الصورة.';
-            }
+            if (data) { readerResult.textContent = data; } 
+            else { readerResult.textContent = 'عذراً، لم يتم العثور على رمز QR في الصورة.'; }
         }
 
         generateBtn.addEventListener('click', generateQRCode);
         closeButton.addEventListener('click', () => qrModal.classList.remove('visible'));
-        qrModal.addEventListener('click', (e) => {
-            if (e.target === qrModal) {
-                qrModal.classList.remove('visible');
-            }
-        });
+        qrModal.addEventListener('click', (e) => { if (e.target === qrModal) qrModal.classList.remove('visible'); });
         dropZone.addEventListener('click', () => fileInput.click());
         fileInput.addEventListener('change', (e) => { if (e.target.files.length > 0) handleFile(e.target.files[0]); });
         dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
         dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragleave'));
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('dragover');
-            if (e.dataTransfer.files.length > 0) {
-                handleFile(e.dataTransfer.files[0]);
-                fileInput.value = '';
-            }
-        });
+        dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); if (e.dataTransfer.files.length > 0) { handleFile(e.dataTransfer.files[0]); fileInput.value = ''; } });
     </script>
     
     <script>
