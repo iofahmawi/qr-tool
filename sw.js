@@ -1,8 +1,7 @@
-// sw.js - QR Tool (Dynamic Version)
+const CACHE_NAME = 'qr-tool-dynamic-v5'; // قمت بتحديث الإصدار
 
-const CACHE_NAME = 'qr-tool-dynamic-v4';
-
-// نخزن فقط الملفات المحلية الأساسية لضمان التثبيت السريع
+// 1. التثبيت: نخزن فقط الملفات المحلية الأساسية جداً لضمان نجاح التثبيت
+// لن نخزن المكتبات الخارجية هنا لتجنب فشل التثبيت إذا كان النت ضعيفاً
 const urlsToCache = [
   './',
   'index.html',
@@ -36,27 +35,31 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+  // لا نتدخل إلا في طلبات GET
+  if (event.request.method !== 'GET') return;
+
   event.respondWith(
     caches.match(event.request)
       .then(cachedResponse => {
-        // 1. إذا وجدنا الملف في الكاش، نرجعه فوراً
+        // 1. إذا وجدنا الملف في الكاش، نرجعه فوراً (سواء كان html أو مكتبة خارجية)
         if (cachedResponse) {
           return cachedResponse;
         }
 
-        // 2. إذا لم نجده، نطلبه من الشبكة
+        // 2. إذا لم نجده، نطلبه من الإنترنت
         return fetch(event.request).then(networkResponse => {
           // التحقق من صحة الاستجابة
-          // نسمح بـ 'cors' و 'basic' لأنك تستخدم مكتبات خارجية وخطوط جوجل
+          // نسمح بـ 'cors' لأننا نستخدم مكتبات خارجية وخطوط جوجل
           if (!networkResponse || networkResponse.status !== 200 || (networkResponse.type !== 'basic' && networkResponse.type !== 'cors')) {
             return networkResponse;
           }
 
-          // 3. تخزين النسخة الجديدة في الكاش للمستقبل
+          // 3. تخزين النسخة الجديدة في الكاش للمستقبل (Dynamic Caching)
+          // هذا هو الجزء الذي سيقوم بحفظ المكتبات الخارجية تلقائياً
           const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then(cache => {
-            // نتأكد أننا نخزن فقط طلبات GET ونستثني إضافات كروم
-            if (event.request.method === 'GET' && !event.request.url.startsWith('chrome-extension')) {
+            // نتأكد أننا لا نخزن طلبات غير مدعومة (مثل chrome-extension)
+            if (event.request.url.startsWith('http')) {
                 cache.put(event.request, responseToCache);
             }
           });
