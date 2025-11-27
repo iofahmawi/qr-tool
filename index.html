@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Tool</title>
     
-    <!-- === الإضافات الجديدة لـ PWA === -->
     <meta name="theme-color" content="#f8f9fa">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icon-1024.png">
     <link rel="apple-touch-icon" href="icon-1024.png">
-    <!-- ========================= -->
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
@@ -189,7 +187,7 @@
             border-radius: 12px;
             position: relative;
             width: 90%;
-            max-width: 280px;
+            max-width: 280px; /* عدنا للحجم الأصلي */
             text-align: center;
             transform: scale(0.9);
             transition: transform 0.3s ease;
@@ -218,7 +216,6 @@
             margin: 1rem auto 0;
         }
     </style>
-    <!-- المكتبات المطلوبة -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 </head>
@@ -230,14 +227,12 @@
             <button class="tab-button" onclick="showTab('reader')">قراءة رمز</button>
         </div>
 
-        <!-- قسم إنشاء الرمز -->
         <div id="generator-content" class="tab-content">
             <h2>إنشاء رمز QR جديد</h2>
             <textarea id="text-input" rows="4" placeholder="أدخل النص أو الرابط هنا..."></textarea>
             <button id="generate-btn" class="btn btn-primary">إنشاء الرمز</button>
         </div>
 
-        <!-- قسم قراءة الرمز -->
         <div id="reader-content" class="tab-content hidden">
             <h2>قراءة رمز QR من صورة</h2>
             <input type="file" id="qr-file-input" accept="image/*" class="hidden">
@@ -249,19 +244,16 @@
         </div>
     </div>
 
-    <!-- النافذة المنبثقة لعرض الرمز -->
     <div id="qr-modal" class="modal-overlay">
         <div class="modal-content">
             <span class="close-button">&times;</span>
             <h3>رمز QR الخاص بك</h3>
             <div id="modal-qrcode-display"></div>
-            <!-- --- هذا هو التعديل المطلوب: تغيير اللون إلى الأزرق الأساسي --- -->
             <a id="modal-download-link" class="btn btn-primary" download="qrcode.png">تنزيل الرمز</a>
         </div>
     </div>
 
     <script>
-        // --- تهيئة العناصر ---
         const generatorTab = document.getElementById('generator-content');
         const readerTab = document.getElementById('reader-content');
         const tabButtons = document.querySelectorAll('.tab-button');
@@ -275,7 +267,6 @@
         const modalDownloadLink = document.getElementById('modal-download-link');
         const closeButton = document.querySelector('.close-button');
 
-        // --- التحكم بالتبويبات ---
         function showTab(tabName) {
             const isGenerator = tabName === 'generator';
             generatorTab.classList.toggle('hidden', !isGenerator);
@@ -284,7 +275,23 @@
             tabButtons[1].classList.toggle('active', !isGenerator);
         }
 
-        // --- وظائف إنشاء رمز QR ---
+        // --- دالة مساعدة لرسم العيون بحواف ناعمة ---
+        function drawRoundedRect(ctx, x, y, width, height, radius) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        // --- وظائف إنشاء رمز QR (المعدلة لرسم النقاط) ---
         async function generateQRCode() {
             const text = textInput.value.trim();
             if (!text) {
@@ -293,14 +300,67 @@
             }
             generateBtn.textContent = '... جاري الإنشاء ...';
             generateBtn.disabled = true;
-            const qrSize = 256;
+
             try {
-                const dataUrl = await QRCode.toDataURL(text, { width: qrSize, margin: 2, errorCorrectionLevel: 'H' });
-                modalQrDisplay.innerHTML = `<img src="${dataUrl}" alt="QR Code">`;
+                // 1. استخراج بيانات الرمز الخام
+                const rawQR = QRCode.create(text, { errorCorrectionLevel: 'H' });
+                const moduleCount = rawQR.modules.size;
+                const tileSize = 20; 
+                const margin = tileSize * 4; 
+                const canvasSize = (moduleCount * tileSize) + (margin * 2);
+
+                // 2. إعداد الكانفاس
+                const canvas = document.createElement('canvas');
+                canvas.width = canvasSize;
+                canvas.height = canvasSize;
+                const ctx = canvas.getContext('2d');
+
+                // 3. الخلفية بيضاء
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvasSize, canvasSize);
+
+                // 4. لون الرمز (أسود كما في الأصل)
+                ctx.fillStyle = '#000000';
+
+                // 5. رسم النقاط
+                for (let row = 0; row < moduleCount; row++) {
+                    for (let col = 0; col < moduleCount; col++) {
+                        if (rawQR.modules.get(row, col)) {
+                            const x = margin + (col * tileSize);
+                            const y = margin + (row * tileSize);
+
+                            // تحديد هل النقطة جزء من العيون (Finders)
+                            const isFinder = (
+                                (row < 7 && col < 7) || 
+                                (row < 7 && col >= moduleCount - 7) || 
+                                (row >= moduleCount - 7 && col < 7)
+                            );
+
+                            if (isFinder) {
+                                // رسم العيون كمربعات بزوايا ناعمة قليلاً
+                                drawRoundedRect(ctx, x, y, tileSize, tileSize, 0); // جعلتها 0 لتبقى مربعة تماما للعيون أو يمكن وضع 2 لنعومة طفيفة جدا
+                            } else {
+                                // رسم البيانات كدوائر
+                                ctx.beginPath();
+                                const centerX = x + (tileSize / 2);
+                                const centerY = y + (tileSize / 2);
+                                const radius = (tileSize / 2) * 0.85; // حجم الدائرة
+                                ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                                ctx.fill();
+                            }
+                        }
+                    }
+                }
+
+                // 6. العرض
+                const dataUrl = canvas.toDataURL('image/png');
+                // عرض الصورة داخل النافذة (مع تحديد العرض 100% ليحترم عرض النافذة الأصلي)
+                modalQrDisplay.innerHTML = `<img src="${dataUrl}" alt="QR Code" style="width: 100%; height: auto;">`;
                 modalDownloadLink.href = dataUrl;
-                modalDownloadLink.style.width = `${qrSize}px`;
                 qrModal.classList.add('visible');
+
             } catch (err) {
+                console.error(err);
                 alert('عذراً، لم نتمكن من إنشاء رمز QR. قد يكون النص طويلاً جداً.');
             } finally {
                 generateBtn.textContent = 'إنشاء الرمز';
@@ -308,7 +368,7 @@
             }
         }
 
-        // --- وظائف قراءة رمز QR ---
+        // --- وظائف قراءة رمز QR (لم تتغير) ---
         async function handleFile(file) {
             if (!file || !file.type.startsWith('image/')) {
                 alert('الرجاء اختيار ملف صورة صالح.');
@@ -317,6 +377,7 @@
             readerResult.classList.remove('hidden');
             readerResult.textContent = 'جاري البحث عن رمز...';
             const objectURL = URL.createObjectURL(file);
+            
             if ('BarcodeDetector' in window) {
                 try {
                     const barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
@@ -328,9 +389,10 @@
                         return;
                     }
                 } catch (error) {
-                    console.warn('Barcode Detector API failed, falling back to jsQR.', error);
+                    // Fallback to jsQR
                 }
             }
+
             const imageForCanvas = new Image();
             imageForCanvas.onload = () => {
                 const canvas = document.getElementById('canvas');
@@ -349,6 +411,7 @@
             };
             imageForCanvas.src = objectURL;
         }
+
         function setResult(data) {
             if (data) {
                 readerResult.textContent = data;
@@ -357,7 +420,6 @@
             }
         }
 
-        // --- ربط الأحداث ---
         generateBtn.addEventListener('click', generateQRCode);
         closeButton.addEventListener('click', () => qrModal.classList.remove('visible'));
         qrModal.addEventListener('click', (e) => {
@@ -380,8 +442,8 @@
     </script>
     
     <script>
-    if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').then(registration => { console.log('SW registration successful:', registration.scope); }).catch(err => { console.log('SW registration failed:', err); }); }); }
-  </script>
+        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); }); }
+    </script>
     
 </body>
 </html>
