@@ -1,47 +1,68 @@
-const CACHE_NAME = 'qr-tool-cache-v3';
-const APP_SHELL_URLS = [
-    '/',
-    '/index.html',
-    '/manifest.json',
-    '/icon-1024.png',
-    'https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js',
-    'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js',
-    'https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap'
+// sw.js - QR Tool (Dynamic Version)
+
+const CACHE_NAME = 'qr-tool-dynamic-v4';
+
+// نخزن فقط الملفات المحلية الأساسية لضمان التثبيت السريع
+const urlsToCache = [
+  './',
+  'index.html',
+  'manifest.json'
 ];
 
-self.addEventListener('install', (event) => {
-    event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(APP_SHELL_URLS);
-        })
-    );
+self.addEventListener('install', event => {
+  self.skipWaiting(); // تفعيل التحديث فوراً
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('Service Worker: Caching critical files');
+        return cache.addAll(urlsToCache);
+      })
+  );
 });
 
-self.addEventListener('activate', (event) => {
-    event.waitUntil(
-        caches.keys().then((cacheNames) => {
-            return Promise.all(
-                cacheNames.map((cacheName) => {
-                    if (cacheName !== CACHE_NAME) {
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
+self.addEventListener('activate', event => {
+  const cacheWhitelist = [CACHE_NAME];
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            return caches.delete(cacheName); // حذف الكاش القديم
+          }
         })
-    );
+      );
+    }).then(() => self.clients.claim())
+  );
 });
 
-self.addEventListener('fetch', (event) => {
-    if (event.request.method !== 'GET') {
-        return;
-    }
-    
-    event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
-            if (cachedResponse) {
-                return cachedResponse;
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request)
+      .then(cachedResponse => {
+        // 1. إذا وجدنا الملف في الكاش، نرجعه فوراً
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+
+        // 2. إذا لم نجده، نطلبه من الشبكة
+        return fetch(event.request).then(networkResponse => {
+          // التحقق من صحة الاستجابة
+          // نسمح بـ 'cors' و 'basic' لأنك تستخدم مكتبات خارجية وخطوط جوجل
+          if (!networkResponse || networkResponse.status !== 200 || (networkResponse.type !== 'basic' && networkResponse.type !== 'cors')) {
+            return networkResponse;
+          }
+
+          // 3. تخزين النسخة الجديدة في الكاش للمستقبل
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            // نتأكد أننا نخزن فقط طلبات GET ونستثني إضافات كروم
+            if (event.request.method === 'GET' && !event.request.url.startsWith('chrome-extension')) {
+                cache.put(event.request, responseToCache);
             }
-            return fetch(event.request);
-        })
-    );
+          });
+
+          return networkResponse;
+        });
+      })
+  );
 });
