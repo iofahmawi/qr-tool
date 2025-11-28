@@ -69,9 +69,9 @@
         
         #modal-download-link { margin: 1rem auto 0; }
     </style>
-    <!-- مكتبة التوليد (بقيت كما هي) -->
+    <!-- مكتبة التوليد -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
-    <!-- (مهم) استبدال مكتبة القراءة بمكتبة html5-qrcode القوية -->
+    <!-- مكتبة القراءة القوية (html5-qrcode) -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </head>
 <body>
@@ -84,6 +84,7 @@
 
         <div id="generator-content" class="tab-content">
             <h2>إنشاء رمز QR جديد</h2>
+            <!-- تم ضبط عدد الأسطر على 7 كما طلبت -->
             <textarea id="text-input" rows="7" placeholder="أدخل النص أو الرابط هنا..."></textarea>
             <button id="generate-btn" class="btn btn-primary">إنشاء الرمز</button>
         </div>
@@ -95,7 +96,7 @@
                 <p>اسحب وأفلت الصورة هنا، أو انقر للاختيار</p>
             </div>
             <div id="reader-result" class="hidden"></div>
-            <!-- عنصر وهمي لتهيئة المكتبة الجديدة -->
+            <!-- عنصر مخفي لتهيئة مكتبة القراءة -->
             <div id="reader-placeholder" style="display: none;"></div>
         </div>
     </div>
@@ -229,7 +230,6 @@
             }
         }
 
-        // --- دالة القراءة المعدلة (تستخدم Html5Qrcode) ---
         async function handleFile(file) {
             if (!file || !file.type.startsWith('image/')) { alert('الرجاء اختيار ملف صورة صالح.'); return; }
             
@@ -237,7 +237,7 @@
             readerResult.textContent = 'جاري تحليل الرمز...';
             
             try {
-                // نستخدم div مخفي لتهيئة المكتبة
+                // استخدام مكتبة html5-qrcode
                 const html5QrCode = new Html5Qrcode("reader-placeholder");
                 const result = await html5QrCode.scanFile(file, true);
                 
@@ -247,7 +247,6 @@
                     setResult(null);
                 }
             } catch (err) {
-                // هذه المكتبة ترمي خطأ إذا لم تجد رمزاً، وهذا طبيعي
                 console.log(err);
                 setResult(null);
             }
