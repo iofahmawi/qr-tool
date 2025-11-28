@@ -267,9 +267,11 @@
         dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); if (e.dataTransfer.files.length > 0) { handleFile(e.dataTransfer.files[0]); fileInput.value = ''; } });
     </script>
     
+
     <script>
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); }); }
     </script>
     
+
 </body>
 </html>
