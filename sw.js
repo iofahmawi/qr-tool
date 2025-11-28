@@ -1,4 +1,4 @@
-const CACHE_NAME = 'qr-tool-advanced-v9';
+const CACHE_NAME = 'qr-tool-cairo-v10';
 const APP_SHELL_URLS = [
     '/',
     '/index.html',
@@ -6,7 +6,6 @@ const APP_SHELL_URLS = [
     '/icon-1024.png',
     'https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap',
     'https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js',
-    // المكتبة الجديدة المطلوبة للقراءة
     'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js'
 ];
 
@@ -42,7 +41,7 @@ self.addEventListener('fetch', event => {
     if (event.request.method !== 'GET') return;
     
     event.respondWith(
-        caches.match(event.request).then(cachedResponse => {
+        caches.match(event.request).then((cachedResponse) => {
             if (cachedResponse) {
                 return cachedResponse;
             }
