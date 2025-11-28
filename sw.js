@@ -1,4 +1,4 @@
-const CACHE_NAME = 'qr-tool-cairo-v10';
+const CACHE_NAME = 'qr-tool-cairo-v11';
 const APP_SHELL_URLS = [
     '/',
     '/index.html',
