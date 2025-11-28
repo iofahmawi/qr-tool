@@ -1,71 +1,60 @@
-const CACHE_NAME = 'qr-tool-dynamic-v8'; // قمت بتحديث الإصدار
-
-// 1. التثبيت: نخزن فقط الملفات المحلية الأساسية جداً لضمان نجاح التثبيت
-// لن نخزن المكتبات الخارجية هنا لتجنب فشل التثبيت إذا كان النت ضعيفاً
-const urlsToCache = [
-  './',
-  'index.html',
-  'manifest.json'
+const CACHE_NAME = 'qr-tool-advanced-v9';
+const APP_SHELL_URLS = [
+    '/',
+    '/index.html',
+    '/manifest.json',
+    '/icon-1024.png',
+    'https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap',
+    'https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js',
+    // المكتبة الجديدة المطلوبة للقراءة
+    'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js'
 ];
 
 self.addEventListener('install', event => {
-  self.skipWaiting(); // تفعيل التحديث فوراً
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Service Worker: Caching critical files');
-        return cache.addAll(urlsToCache);
-      })
-  );
+    self.skipWaiting();
+    event.waitUntil(
+        caches.open(CACHE_NAME).then(cache => {
+            return cache.addAll([
+                '/',
+                '/index.html',
+                '/manifest.json',
+                '/icon-1024.png'
+            ]);
+        })
+    );
 });
 
 self.addEventListener('activate', event => {
-  const cacheWhitelist = [CACHE_NAME];
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName); // حذف الكاش القديم
-          }
+    event.waitUntil(
+        caches.keys().then(cacheNames => {
+            return Promise.all(
+                cacheNames.map(cacheName => {
+                    if (cacheName !== CACHE_NAME) {
+                        return caches.delete(cacheName);
+                    }
+                })
+            );
         })
-      );
-    }).then(() => self.clients.claim())
-  );
+    ).then(() => self.clients.claim());
 });
 
 self.addEventListener('fetch', event => {
-  // لا نتدخل إلا في طلبات GET
-  if (event.request.method !== 'GET') return;
-
-  event.respondWith(
-    caches.match(event.request)
-      .then(cachedResponse => {
-        // 1. إذا وجدنا الملف في الكاش، نرجعه فوراً (سواء كان html أو مكتبة خارجية)
-        if (cachedResponse) {
-          return cachedResponse;
-        }
-
-        // 2. إذا لم نجده، نطلبه من الإنترنت
-        return fetch(event.request).then(networkResponse => {
-          // التحقق من صحة الاستجابة
-          // نسمح بـ 'cors' لأننا نستخدم مكتبات خارجية وخطوط جوجل
-          if (!networkResponse || networkResponse.status !== 200 || (networkResponse.type !== 'basic' && networkResponse.type !== 'cors')) {
-            return networkResponse;
-          }
-
-          // 3. تخزين النسخة الجديدة في الكاش للمستقبل (Dynamic Caching)
-          // هذا هو الجزء الذي سيقوم بحفظ المكتبات الخارجية تلقائياً
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            // نتأكد أننا لا نخزن طلبات غير مدعومة (مثل chrome-extension)
-            if (event.request.url.startsWith('http')) {
-                cache.put(event.request, responseToCache);
+    if (event.request.method !== 'GET') return;
+    
+    event.respondWith(
+        caches.match(event.request).then(cachedResponse => {
+            if (cachedResponse) {
+                return cachedResponse;
             }
-          });
-
-          return networkResponse;
-        });
-      })
-  );
+            return fetch(event.request).then(networkResponse => {
+                const responseToCache = networkResponse.clone();
+                caches.open(CACHE_NAME).then(cache => {
+                    if (event.request.url.startsWith('http')) {
+                        cache.put(event.request, responseToCache);
+                    }
+                });
+                return networkResponse;
+            });
+        })
+    );
 });
