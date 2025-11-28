@@ -65,13 +65,14 @@
         .close-button { position: absolute; top: 10px; left: 15px; font-size: 2rem; font-weight: bold; color: #aaa; cursor: pointer; line-height: 1; }
         
         #modal-qrcode-display { margin: 1.5rem 0; display: flex; justify-content: center; }
-        /* تم إزالة الظل من هنا */
         #modal-qrcode-display img { max-width: 100%; border-radius: 8px; }
         
         #modal-download-link { margin: 1rem auto 0; }
     </style>
+    <!-- مكتبة التوليد (بقيت كما هي) -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <!-- (مهم) استبدال مكتبة القراءة بمكتبة html5-qrcode القوية -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </head>
 <body>
 
@@ -83,7 +84,6 @@
 
         <div id="generator-content" class="tab-content">
             <h2>إنشاء رمز QR جديد</h2>
-            <!-- تم تعديل rows إلى 8 لزيادة الارتفاع -->
             <textarea id="text-input" rows="7" placeholder="أدخل النص أو الرابط هنا..."></textarea>
             <button id="generate-btn" class="btn btn-primary">إنشاء الرمز</button>
         </div>
@@ -95,7 +95,8 @@
                 <p>اسحب وأفلت الصورة هنا، أو انقر للاختيار</p>
             </div>
             <div id="reader-result" class="hidden"></div>
-            <canvas id="canvas" class="hidden"></canvas>
+            <!-- عنصر وهمي لتهيئة المكتبة الجديدة -->
+            <div id="reader-placeholder" style="display: none;"></div>
         </div>
     </div>
 
@@ -228,45 +229,33 @@
             }
         }
 
+        // --- دالة القراءة المعدلة (تستخدم Html5Qrcode) ---
         async function handleFile(file) {
             if (!file || !file.type.startsWith('image/')) { alert('الرجاء اختيار ملف صورة صالح.'); return; }
-            readerResult.classList.remove('hidden');
-            readerResult.textContent = 'جاري البحث عن رمز...';
-            const objectURL = URL.createObjectURL(file);
             
-            if ('BarcodeDetector' in window) {
-                try {
-                    const barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
-                    const image = await createImageBitmap(file);
-                    const barcodes = await barcodeDetector.detect(image);
-                    if (barcodes.length > 0) {
-                        setResult(barcodes[0].rawValue);
-                        URL.revokeObjectURL(objectURL);
-                        return;
-                    }
-                } catch (error) {}
+            readerResult.classList.remove('hidden');
+            readerResult.textContent = 'جاري تحليل الرمز...';
+            
+            try {
+                // نستخدم div مخفي لتهيئة المكتبة
+                const html5QrCode = new Html5Qrcode("reader-placeholder");
+                const result = await html5QrCode.scanFile(file, true);
+                
+                if (result) {
+                    setResult(result);
+                } else {
+                    setResult(null);
+                }
+            } catch (err) {
+                // هذه المكتبة ترمي خطأ إذا لم تجد رمزاً، وهذا طبيعي
+                console.log(err);
+                setResult(null);
             }
-
-            const imageForCanvas = new Image();
-            imageForCanvas.onload = () => {
-                const canvas = document.getElementById('canvas');
-                const ctx = canvas.getContext('2d', { willReadFrequently: true });
-                canvas.width = imageForCanvas.width;
-                canvas.height = imageForCanvas.height;
-                ctx.drawImage(imageForCanvas, 0, 0, canvas.width, canvas.height);
-                try {
-                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    const code = jsQR(imageData.data, imageData.width, imageData.height);
-                    setResult(code ? code.data : null);
-                } catch (error) { setResult(null); }
-                URL.revokeObjectURL(objectURL);
-            };
-            imageForCanvas.src = objectURL;
         }
 
         function setResult(data) {
             if (data) { readerResult.textContent = data; } 
-            else { readerResult.textContent = 'عذراً، لم يتم العثور على رمز QR في الصورة.'; }
+            else { readerResult.textContent = 'عذراً، لم يتم العثور على رمز QR في الصورة (تأكد من وضوح الصورة).'; }
         }
 
         generateBtn.addEventListener('click', generateQRCode);
