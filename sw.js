@@ -1,4 +1,4 @@
-const CACHE_NAME = 'qr-tool-cache1-v1';
+const CACHE_NAME = 'qr-tool-cache1-v2';
 const APP_SHELL_URLS = [
     '/',
     '/index.html',
