@@ -31,7 +31,7 @@
         .tab-button { flex: 1; padding: 1rem; border: none; background: transparent; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; border-bottom: 3px solid transparent; font-family: var(--font-family); border-radius: 12px 12px 0 0; }
         .tab-button.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
         .tab-content { padding: 2rem; }
-        .hidden { display: none; }
+        .hidden { display: none !important; }
         h2 { margin-top: 0; font-size: 1.2rem; text-align: center; margin-bottom: 1.5rem; }
         
         textarea { 
@@ -54,6 +54,9 @@
         .btn { display: block; width: 100%; padding: 0.6rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; text-align: center; transition: background-color 0.3s ease; font-family: var(--font-family); text-decoration: none; box-sizing: border-box; }
         .btn-primary { background-color: var(--primary-color); color: white; }
         .btn-primary:hover { background-color: var(--primary-hover); }
+        @media (hover: none) {
+            .btn-primary:hover { background-color: var(--primary-color); }
+        }
         #drop-zone { border: 2px dashed var(--border-color); border-radius: 8px; padding: 2rem; text-align: center; cursor: pointer; transition: all 0.3s ease; }
         #drop-zone.dragover { border-color: var(--primary-color); background-color: #e9f5ff; }
         #reader-result { margin-top: 1.5rem; padding: 0.6rem 1rem; background-color: #e9ecef; border-radius: 8px; text-align: right; word-wrap: break-word; font-weight: 600; font-size: 0.9rem; line-height: 1.6; white-space: pre-wrap; }
@@ -335,7 +338,7 @@
         }
 
         generateBtn.addEventListener('click', generateQRCode);
-        copyBtn.addEventListener('click', () => { if (scannedText) copyToClipboard(scannedText); });
+        copyBtn.addEventListener('click', () => { if (scannedText) copyToClipboard(scannedText); copyBtn.blur(); });
         closeButton.addEventListener('click', () => qrModal.classList.remove('visible'));
         qrModal.addEventListener('click', (e) => { if (e.target === qrModal) qrModal.classList.remove('visible'); });
         dropZone.addEventListener('click', () => fileInput.click());
