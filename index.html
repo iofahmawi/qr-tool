@@ -96,6 +96,7 @@
                 <p>اسحب وأفلت الصورة هنا، أو انقر للاختيار</p>
             </div>
             <div id="reader-result" class="hidden"></div>
+            <button id="copy-btn" class="btn btn-primary hidden" style="margin-top: 1rem;">نسخ النص</button>
             <!-- عنصر مخفي لتهيئة مكتبة القراءة -->
             <div id="reader-placeholder" style="display: none;"></div>
         </div>
@@ -118,6 +119,7 @@
         const dropZone = document.getElementById('drop-zone');
         const fileInput = document.getElementById('qr-file-input');
         const readerResult = document.getElementById('reader-result');
+        const copyBtn = document.getElementById('copy-btn');
         const generateBtn = document.getElementById('generate-btn');
         const qrModal = document.getElementById('qr-modal');
         const modalQrDisplay = document.getElementById('modal-qrcode-display');
@@ -235,6 +237,7 @@
             
             readerResult.classList.remove('hidden');
             readerResult.textContent = 'جاري تحليل الرمز...';
+            copyBtn.classList.add('hidden');
             
             try {
                 // استخدام مكتبة html5-qrcode
@@ -252,12 +255,17 @@
             }
         }
 
+        let scannedText = '';
+
         function setResult(data) {
             if (data) {
                 readerResult.textContent = data;
-                copyToClipboard(data);
+                scannedText = data;
+                copyBtn.classList.remove('hidden');
             } else {
                 readerResult.textContent = 'عذراً، لم يتم العثور على رمز QR في الصورة (تأكد من وضوح الصورة).';
+                scannedText = '';
+                copyBtn.classList.add('hidden');
             }
         }
 
@@ -327,6 +335,7 @@
         }
 
         generateBtn.addEventListener('click', generateQRCode);
+        copyBtn.addEventListener('click', () => { if (scannedText) copyToClipboard(scannedText); });
         closeButton.addEventListener('click', () => qrModal.classList.remove('visible'));
         qrModal.addEventListener('click', (e) => { if (e.target === qrModal) qrModal.classList.remove('visible'); });
         dropZone.addEventListener('click', () => fileInput.click());
